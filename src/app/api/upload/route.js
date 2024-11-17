@@ -2,11 +2,13 @@ import dbConnect from "@/lib/dbConnect";
 import AssignmentModel from "@/model/Assignment";
 import UserModel from "@/model/User";
 import { NextResponse } from "next/server";
+//API URL: http://localhost:3000/api/upload
 export async function POST(req) {
   await dbConnect();
   try {
     const body = await req.json();
     const { username, task, adminname } = body;
+    // check for required field names
     if (!username || !task || !adminname) {
       return NextResponse.json(
         {
@@ -16,6 +18,7 @@ export async function POST(req) {
         { status: 400 }
       );
     }
+    // user should create assignment with unique task names 
     const existingAssignmentByTaskAndUserName = await AssignmentModel.findOne({
       username,
       task,
@@ -29,8 +32,9 @@ export async function POST(req) {
         { status: 400 }
       );
     }
+    // check if the tagged admin exists in users
     const userByAdminName = await UserModel.findOne({ username: adminname });
-    if(!userByAdminName){
+    if (!userByAdminName) {
       return NextResponse.json(
         {
           success: false,
@@ -40,6 +44,7 @@ export async function POST(req) {
       );
     }
     const adminId = userByAdminName._id;
+    //create a new assignment and assign the initial state as pending
     const newAssignment = new AssignmentModel({
       username,
       task,
@@ -47,6 +52,7 @@ export async function POST(req) {
       status: "pending",
     });
     await newAssignment.save();
+    // save the newly created assignment and return it
     return NextResponse.json(
       {
         success: true,
@@ -55,7 +61,9 @@ export async function POST(req) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } 
+  //handle any unexpected error with catch block
+  catch (error) {
     console.log(error);
     return NextResponse.json(
       {

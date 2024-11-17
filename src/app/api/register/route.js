@@ -7,6 +7,7 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { username, email, password, role } = body;
+    // check for required field names
     if (!username || !email || !password || !role) {
       return NextResponse.json(
         {
@@ -16,6 +17,7 @@ export async function POST(req) {
         { status: 400 }
       );
     }
+    // Can not create an account if the email is already used by another.
     const existingUserByEmail = await UserModel.findOne({ email });
     if (existingUserByEmail) {
       return NextResponse.json(
@@ -26,6 +28,7 @@ export async function POST(req) {
         { status: 400 }
       );
     }
+    // Can not create an account if the username is already taken by another user.
     const existingUserByUsername = await UserModel.findOne({ username });
     if (existingUserByUsername) {
       return NextResponse.json(
@@ -37,7 +40,9 @@ export async function POST(req) {
       );
     }
     const salt = await bcrypt.genSalt(10);
+    // create a hashed password string 
     let hashedPassword = await bcrypt.hash(password, salt);
+    // new user creation in users schema
     const newUser = new UserModel({
       username,
       email,
@@ -52,7 +57,9 @@ export async function POST(req) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  }
+  //handle any unexpected error with catch block
+  catch (error) {
     return NextResponse.json(
       {
         success: false,
