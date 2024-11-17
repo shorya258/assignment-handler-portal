@@ -1,9 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 const AssignmentSchema = new Schema(
   {
-    userName: {
+    username: {
       type: String,
-      required: [true, "Username is required"],
+      required: [true, "User name is required"],
       trim: true,
       unique: true,
     },
