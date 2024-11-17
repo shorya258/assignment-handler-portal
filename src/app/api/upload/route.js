@@ -24,12 +24,21 @@ export async function POST(req) {
       return NextResponse.json(
         {
           success: false,
-          message: "This task already exists for this username.",
+          message: `${task} already exists for ${username}.`,
         },
         { status: 400 }
       );
     }
     const userByAdminName = await UserModel.findOne({ username: adminname });
+    if(!userByAdminName){
+      return NextResponse.json(
+        {
+          success: false,
+          message: `${adminname} is not an admin.`,
+        },
+        { status: 400 }
+      );
+    }
     const adminId = userByAdminName._id;
     const newAssignment = new AssignmentModel({
       username,
@@ -47,6 +56,7 @@ export async function POST(req) {
       { status: 201 }
     );
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       {
         success: false,
