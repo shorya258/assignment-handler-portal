@@ -5,12 +5,12 @@ const AssignmentSchema = new Schema(
       type: String,
       required: [true, "User name is required"],
       trim: true,
-      unique: true,
     },
     task: {
       type: String,
       required: [true, "Task is required"],
       trim: true,
+      unique: true,
     },
     adminObjectId: {
       type: mongoose.Schema.Types.ObjectId,
